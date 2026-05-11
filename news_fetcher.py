@@ -30,17 +30,25 @@ def fetch_rss(url, n=5, source_name="RSS Source"):
         return []
 
 
-def fetch_latest_cves(n=5):
-    """Fetch latest CVE vulnerabilities."""
+def fetch_cisa_kev(n=5):
+    """Fetch latest Known Exploited Vulnerabilities from CISA."""
     try:
-        data = requests.get("https://cve.circl.lu/api/last", timeout=10).json()
-        return [{
-            "title": item.get("id", "Unknown CVE"),
-            "summary": item.get("summary", "No summary available"),
-            "source": "CVE Feed"
-        } for item in data[:n]]
+        url = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+        data = requests.get(url, timeout=10).json()
+
+        vulns = data.get("vulnerabilities", [])[:n]
+
+        results = []
+        for v in vulns:
+            results.append({
+                "title": v.get("cveID", "Unknown CVE"),
+                "summary": v.get("shortDescription", "No description available"),
+                "source": "CISA KEV"
+            })
+        return results
+
     except Exception as e:
-        print(f"[ERROR] Could not fetch CVEs: {e}")
+        print(f"[ERROR] Could not fetch CISA KEV: {e}")
         return []
 
 
@@ -48,7 +56,7 @@ if __name__ == "__main__":
     print("\n=== Tech & Cyber News ===")
     print(f"Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
 
-    # Cybersecurity RSS sources
+    # sources :
     sources = [
         ("https://feeds.feedburner.com/TheHackersNews", "The Hacker News"),
         ("https://krebsonsecurity.com/feed/", "Krebs on Security"),
@@ -63,8 +71,8 @@ if __name__ == "__main__":
             print(f"- {h['title']}")
             print(f"  {h['url']}\n")
 
-    print("Latest Cybersecurity Alerts (CVE):")
-    print("----------------------------------")
-    for c in fetch_latest_cves(5):
-        print(f"- {c['title']}")
-        print(f"  {c['summary']}\n")
+    print("Latest Known Exploited Vulnerabilities (CISA KEV):")
+    print("--------------------------------------------------")
+    for v in fetch_cisa_kev(5):
+        print(f"- {v['title']}")
+        print(f"  {v['summary']}\n")
