@@ -90,3 +90,10 @@ The script fetches the latest known vulnerabilities.
 If a feed is unavailable, the script prints a clean error message and continues.
 
 
+
+## 📸 Example CLI Output
+
+Below is a real screenshot of the tool running:
+
+![CLI Screenshot](assets/cli_screenshot.png)
+
