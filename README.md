@@ -44,7 +44,19 @@ These sources provide a broad, reliable snapshot of current events in cybersecur
 news-fetcher/
 │
 ├── news_fetcher.py
-└── README.md
+├── README.md
+├── requirements.txt
+├── .gitkeep
+│
+├── assets/
+│   |── cli_screenshot.png
+|   |── sample_html.png
+|   |── sample_json.png
+│
+└── samples/
+    ├── sample_output.md
+    ├── sample_output.html
+    └── sample_output.json
 ```
 
 
