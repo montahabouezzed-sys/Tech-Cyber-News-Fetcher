@@ -53,10 +53,10 @@ news-fetcher/
 |   |── news_html.png
 |   |── news_json.png
 │
-└── samples/
-    ├── sample_output.md
-    ├── sample_output.html
-    └── sample_output.json
+|── samples/
+|   ├── sample_output.md
+|   ├── sample_output.html
+|   └── sample_output.json
 ```
 
 
