@@ -1,6 +1,19 @@
 import requests
 import xml.etree.ElementTree as ET
+import json
 from datetime import datetime
+from colorama import Fore, Style, init
+
+import os
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+init(autoreset=True)
+
+# ------------------------------------------------------------
+# RSS FETCHER
+# ------------------------------------------------------------
 
 def fetch_rss(url, n=5, source_name="RSS Source"):
     """Fetch headlines from an RSS feed with safe error handling."""
@@ -26,9 +39,13 @@ def fetch_rss(url, n=5, source_name="RSS Source"):
         return headlines
 
     except Exception as e:
-        print(f"[ERROR] Could not fetch from {source_name}: {e}")
+        print(Fore.RED + f"[ERROR] Could not fetch from {source_name}: {e}")
         return []
 
+
+# ------------------------------------------------------------
+# CISA KEV (VULNERABILITIES)
+# ------------------------------------------------------------
 
 def fetch_cisa_kev(n=5):
     """Fetch latest Known Exploited Vulnerabilities from CISA."""
@@ -48,15 +65,88 @@ def fetch_cisa_kev(n=5):
         return results
 
     except Exception as e:
-        print(f"[ERROR] Could not fetch CISA KEV: {e}")
+        print(Fore.RED + f"[ERROR] Could not fetch CISA KEV: {e}")
         return []
 
 
-if __name__ == "__main__":
-    print("\n=== Tech & Cyber News ===")
-    print(f"Updated: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
+# ------------------------------------------------------------
+# EXPORT FUNCTIONS
+# ------------------------------------------------------------
 
-    # sources :
+def save_to_html(results, filename="news.html"):
+    html = "<h1>Tech & Cyber News</h1>\n<ul>"
+    for item in results:
+        title = item.get("title", "No title")
+        source = item.get("source", "Unknown source")
+        url = item.get("url")  # may be None
+        summary = item.get("summary")
+
+        html += f"<li><b>{title}</b> — {source}<br>"
+
+        if url:
+            html += f"<a href='{url}'>{url}</a><br>"
+        if summary:
+            html += f"{summary}<br>"
+
+        html += "</li><br>"
+
+    html += "</ul>"
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(Fore.GREEN + f"Saved HTML to {filename}")
+
+
+
+def save_to_markdown(results, filename="news.md"):
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write("# Tech & Cyber News\n\n")
+        for item in results:
+            title = item.get("title", "No title")
+            source = item.get("source", "Unknown source")
+            url = item.get("url")
+            summary = item.get("summary")
+
+            f.write(f"### {title}\n")
+            f.write(f"- **Source:** {source}\n")
+            if url:
+                f.write(f"- **Link:** {url}\n")
+            if summary:
+                f.write(f"- **Summary:** {summary}\n")
+            f.write("\n")
+
+    print(Fore.GREEN + f"Saved Markdown to {filename}")
+
+
+def save_to_json(results, filename="news.json"):
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=4, ensure_ascii=False)
+
+    print(Fore.GREEN + f"Saved JSON to {filename}")
+
+
+# ------------------------------------------------------------
+# CLI MENU
+# ------------------------------------------------------------
+
+def menu():
+    print(Fore.CYAN + "\n=== Tech & Cyber News CLI ===")
+    print("1. Cybersecurity News (RSS)")
+    print("2. Tech News (Hacker News)")
+    print("3. Vulnerabilities (CISA KEV)")
+    print("4. Export ALL to HTML")
+    print("5. Export ALL to Markdown")
+    print("6. Export ALL to JSON")
+    print("7. Exit")
+    return input(Fore.YELLOW + "Choose an option: ")
+
+
+# ------------------------------------------------------------
+# MAIN
+# ------------------------------------------------------------
+
+def main():
     sources = [
         ("https://feeds.feedburner.com/TheHackersNews", "The Hacker News"),
         ("https://krebsonsecurity.com/feed/", "Krebs on Security"),
@@ -64,15 +154,59 @@ if __name__ == "__main__":
         ("https://www.cisa.gov/cybersecurity-advisories/all.xml", "CISA Alerts")
     ]
 
-    for url, name in sources:
-        print(f"{name} – Latest Headlines:")
-        print("--------------------------------")
-        for h in fetch_rss(url, 5, name):
-            print(f"- {h['title']}")
-            print(f"  {h['url']}\n")
+    all_results = []
 
-    print("Latest Known Exploited Vulnerabilities (CISA KEV):")
-    print("--------------------------------------------------")
-    for v in fetch_cisa_kev(5):
-        print(f"- {v['title']}")
-        print(f"  {v['summary']}\n")
+    while True:
+        choice = menu()
+
+        if choice == "1":
+            print(Fore.MAGENTA + "\n--- Cybersecurity News ---")
+            for url, name in sources:
+                print(Fore.CYAN + f"\n{name}:")
+                results = fetch_rss(url, 5, name)
+                all_results.extend(results)
+                for item in results:
+                    print(Fore.GREEN + f"- {item['title']}")
+                    print(Fore.YELLOW + f"  {item['url']}")
+
+        elif choice == "2":
+            print(Fore.MAGENTA + "\n--- Tech News (Hacker News) ---")
+            hn = fetch_rss("https://feeds.feedburner.com/TheHackersNews", 5, "Hacker News")
+            all_results.extend(hn)
+            for item in hn:
+                print(Fore.GREEN + f"- {item['title']}")
+                print(Fore.YELLOW + f"  {item['url']}")
+
+        elif choice == "3":
+            print(Fore.MAGENTA + "\n--- Vulnerabilities (CISA KEV) ---")
+            kev = fetch_cisa_kev(5)
+            all_results.extend(kev)
+            for item in kev:
+                print(Fore.RED + f"- {item['title']}")
+                print(Fore.YELLOW + f"  {item['summary']}")
+
+        elif choice == "4":
+            save_to_html(all_results)
+            input(Fore.CYAN + "Export successful. Press Enter to return to menu.")
+            clear()
+
+        elif choice == "5":
+            save_to_markdown(all_results)
+            input(Fore.CYAN + "Export successful. Press Enter to return to menu.")
+            clear()
+
+        elif choice == "6":
+            save_to_json(all_results)
+            input(Fore.CYAN + "Export successful. Press Enter to return to menu.")
+            clear()
+
+        elif choice == "7":
+            print(Fore.CYAN + "Goodbye!")
+            break
+
+        else:
+            print(Fore.RED + "Invalid choice")
+
+
+if __name__ == "__main__":
+    main()
