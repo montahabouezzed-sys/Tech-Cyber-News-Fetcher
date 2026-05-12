@@ -33,7 +33,7 @@ This script uses **four stable, publicly available feeds**:
 Additionally, the script fetches the latest **CVE vulnerabilities** from the CIRCL API:
 
 - **CVE Feed (JSON)**  
-  [https://www.cisa.gov/sites)]([https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json))
+  [https://www.cisa.gov/sites](https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json)
 
 These sources provide a broad, reliable snapshot of current events in cybersecurity and technology.
 
