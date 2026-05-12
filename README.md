@@ -50,8 +50,8 @@ news-fetcher/
 │
 ├── assets/
 │   |── cli_screenshot.png
-|   |── sample_html.png
-|   |── sample_json.png
+|   |── news_html.png
+|   |── news_json.png
 │
 └── samples/
     ├── sample_output.md
