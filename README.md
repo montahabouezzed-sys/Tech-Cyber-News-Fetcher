@@ -41,7 +41,7 @@ These sources provide a broad, reliable snapshot of current events in cybersecur
 
 ## 📁 Project Structure
 ```text
-news-fetcher/
+📂 news-fetcher/
 │
 ├── news_fetcher.py
 ├── README.md
