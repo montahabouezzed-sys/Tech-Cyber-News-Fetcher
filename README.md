@@ -48,12 +48,12 @@ news-fetcher/
 ├── requirements.txt
 ├── .gitkeep
 │
-├── assets/
+├──📂 assets/
 │   |── cli_screenshot.png
 |   |── news_html.png
 |   |── news_json.png
 │
-|── samples/
+|──📂 samples/
 |   ├── sample_output.md
 |   ├── sample_output.html
 |   └── sample_output.json
